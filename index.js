@@ -43,7 +43,7 @@ const verifyJWT = (req, res, next) => {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
     const serviceCollection = client.db("carDoctor").collection("services");
     const bookingCollection = client.db("carDoctor").collection("bookings");
@@ -59,7 +59,7 @@ async function run() {
       res.send({ token });
     });
 
-    // Services
+    // services routes
     app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
       const result = await cursor.toArray();
@@ -80,21 +80,21 @@ async function run() {
     });
 
     //   Bookings
-    app.get('/bookings', verifyJWT, async (req, res) => {
+    app.get("/bookings", verifyJWT, async (req, res) => {
       const decoded = req.decoded;
-      console.log('came back after verify', decoded)
+      console.log("came back after verify", decoded);
 
-      if(decoded.email !== req.query.email){
-          return res.status(403).send({error: 1, message: 'forbidden access'})
+      if (decoded.email !== req.query.email) {
+        return res.status(403).send({ error: 1, message: "forbidden access" });
       }
 
       let query = {};
       if (req.query?.email) {
-          query = { email: req.query.email }
+        query = { email: req.query.email };
       }
       const result = await bookingCollection.find(query).toArray();
       res.send(result);
-  })
+    });
 
     app.post("/bookings", async (req, res) => {
       const booking = req.body;
